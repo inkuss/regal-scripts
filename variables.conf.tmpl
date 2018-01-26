@@ -14,7 +14,7 @@ REGAL_BACKUP=$REGAL_HOME/backup
 HERITRIX_DIR=$REGAL_HOME/heritrix-data
 APACHE_LOG=/var/log/apache2
 APACHE_ACCESS_LOGNAME=other_vhosts_access.log
-CRONJOBS_DIR=$REGAL_HOME/cronjobs
+CRONJOBS_DIR=$REGAL_HOME/regal-scripts
 TOMCAT_HOME=$REGAL_HOME/fedora/tomcat
 TOMCAT_CONF=$TOMCAT_HOME/conf
 ELASTICSEARCH_CONF=/etc/elasticsearch
@@ -36,13 +36,13 @@ MATOMO_PASSWORD=$REGAL_PASSWORD
 #
 SERVER=localhost
 BACKEND=http://api.localhost
-FRONTEND=localhost
+FRONTEND=http://$SERVER
 HERITRIX_URL=https://localhost:8443
 HERITRIX_DATA=http://$SERVER
-URNBASE=http://localhost/resource/
-MATOMO_URL=http://stats.localhost
-ELASTICSEARCH=http://api.localhost/search
-FEDORA=http://api.localhost/fedora
+URNBASE=$FRONTEND/resource/
+MATOMO_URL=http://stats.$SERVER
+ELASTICSEARCH=$BACKEND/search
+FEDORA=$BACKEND/fedora
 OAI_PMH=$BACKEND/oai-pmh
 
 #
@@ -50,5 +50,5 @@ OAI_PMH=$BACKEND/oai-pmh
 #
 EMAIL=root@localhost
 EMAIL_RECIPIENT_PROJECT_ADMIN="root\@localhost.de"
-EMAIL_RECIPIENT_ADMIN_USERS="root\@localhost.de"
+EMAIL_RECIPIENT_ADMIN_USERS=$EMAIL_RECIPIENT_PROJECT_ADMIN
 
