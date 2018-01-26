@@ -21,11 +21,11 @@ function clean(){
     LIMIT=30
 
     # Get a list of snapshots that we want to delete
-    len=`ls -tr /opt/regal/backup/mysql/|wc -l`
+    len=`ls -tr $REGAL_BACKUP/mysql/|wc -l`
     num=`expr $len - $LIMIT`
     if [ $num -gt 0 ]
     then
-	SNAPSHOTS=`ls -tr /opt/regal/backup/mysql/|head -$num` 
+	SNAPSHOTS=`ls -tr $REGAL_BACKUP/mysql/|head -$num` 
 	# Loop over the results and delete each snapshot
 	for SNAPSHOT in $SNAPSHOTS
 	do

@@ -15,7 +15,7 @@ function listAllDoisInRepo(){
     for i in `cat $REGAL_LOGS/titleObjects.txt`
     do 
 	id=$i;
-	doi=`curl -s localhost:9200/frl/_all/$i |json_pp|grep "doi\"\ :\ \""|sed s/"\"doi\"\ :\ \"\([^\"]*\)\","/"\1"/`;
+	doi=`curl -s $ELASTICSEARCH/$INDEXNAME/_all/$i |json_pp|grep "doi\"\ :\ \""|sed s/"\"doi\"\ :\ \"\([^\"]*\)\","/"\1"/`;
 	doi=`trim $doi`;
 	loc=`curl -sI https://dx.doi.org/$doi|grep Location|sed s/"Location:"/""/`;
 	echo $id , $doi , $loc
@@ -33,8 +33,8 @@ function analyseAllDoisInRepo(){
     touch $REGAL_LOGS/noDoi-$dst.csv
     grep -v http $REGAL_LOGS/dois-$dst.csv > $REGAL_LOGS/noDoi-$dst.csv
 #   echo -e "\tFind objects without doi variant 2- Details at $REGAL_LOGS/doi-noDoi-$dst.csv"
-    numOfNoDoi=`curl -s -XGET repository.publisso.de:9200/frl/monograph/_search -d'{"query":{"match_all":{}},"fields":["/@id"], "filter":{"missing":{"field":"doi"}},"size":"50000"}'|json_pp|grep -o "frl:......."|sed s/"\(.*\)"/"https:\/\/repository.publisso.de\/resource\/\1"/|wc -l`
-    listOfNoDoi=`curl -s -XGET repository.publisso.de:9200/frl/monograph/_search -d'{"query":{"match_all":{}},"fields":["/@id"], "filter":{"missing":{"field":"doi"}},"size":"50000"}'|json_pp|grep -o "frl:......."|sed s/"\(.*\)"/"https:\/\/repository.publisso.de\/resource\/\1"/`
+    numOfNoDoi=`curl -s -XGET $ELASTICSEARCH/$INDEXNAME/monograph/_search -d'{"query":{"match_all":{}},"fields":["/@id"], "filter":{"missing":{"field":"doi"}},"size":"50000"}'|json_pp|grep -o "$INDEXNAME:......."|sed s/"\(.*\)"/"https:\/\/$SERVER\/resource\/\1"/|wc -l`
+    listOfNoDoi=`curl -s -XGET $ELASTICSEARCH/$INDEXNAME/monograph/_search -d'{"query":{"match_all":{}},"fields":["/@id"], "filter":{"missing":{"field":"doi"}},"size":"50000"}'|json_pp|grep -o "$INDEXNAME:......."|sed s/"\(.*\)"/"https:\/\/$SERVER\/resource\/\1"/`
     echo $listOfNoDoi >> $REGAL_LOGS/doi-noDoi-$dst.txt
     thirpartyDoi=`cat $REGAL_LOGS/foreignDoi-$dst.csv|wc -l` 
     digitoolDoi=`cat $REGAL_LOGS/digitoolDoi-$dst.csv|wc -l`
@@ -54,7 +54,7 @@ function listAllDoisInDatacite(){
 	doi=$i;
 	loc=`curl -sI https://dx.doi.org/$doi|grep Location|sed s/"Location:"/""/ |sed -e 's/^[[:space:]]*//g' -e 's/[[:space:]]*\$//g'`
 	id=`echo $loc|sed s/".*\(.......\)$"/"\1"/`
-	publisso="https://frl.publisso.de/resource/frl:$id"
+	publisso="$BACKEND/resource/$INDEXNAME:$id"
 	echo $id , $doi , $loc , $publisso
     done > $REGAL_LOGS/datacite-dois-$dst.csv
 }
@@ -68,7 +68,7 @@ function analyseAllDoisInDatacite(){
     for i in ` sed 's/\(^.......\).*/\1/' $REGAL_LOGS/datacite-dois-$dst.csv `
     do
 	occ=`grep -c "$i" $REGAL_LOGS/datacite-dois-$dst.csv`
-	publisso="https://frl.publisso.de/resource/frl:$i"
+	publisso="$BACKEND/resource/$INDEXNAME:$i"
 	echo $i , $occ , $publisso
     done >  $REGAL_LOGS/datacite-occ-$dst.csv
     duplicates=`grep ",\ 2\ ," $REGAL_LOGS/datacite-occ-$dst.csv |wc -l`

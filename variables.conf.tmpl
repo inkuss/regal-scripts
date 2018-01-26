@@ -1,4 +1,8 @@
 #
+# Project,Namespace,Indexname
+#
+INDEXNAME=regal
+#
 # Layout
 #
 REGAL_HOME=/opt/regal
@@ -23,8 +27,8 @@ REGAL_ADMIN=edoweb-admin
 REGAL_PASSWORD=$REGAL_PASSWORD
 FEDORA_ADMIN=admin
 FEDORA_PASSWORD=$REGAL_PASSWORD
-PIWIK_ADMIN=admin
-PIWIK_PASSWORD=$REGAL_PASSWORD
+MATOMO_ADMIN=admin
+MATOMO_PASSWORD=$REGAL_PASSWORD
 
 #
 # Web-APIs
@@ -36,6 +40,9 @@ HERITRIX_URL=https://localhost:8443
 HERITRIX_DATA=http://$SERVER
 URNBASE=http://localhost/resource/
 PIWIK=http://stats.localhost
+ELASTICSEARCH=http://api.localhost/search
+FEDORA=http://api.localhost/fedora
+OAI_PMH=$BACKEND/oai-pmh
 
 #
 # Emails

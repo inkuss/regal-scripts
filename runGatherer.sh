@@ -21,8 +21,8 @@ source variables.conf
 home_dir=$CRONJOBS_DIR
 server=$SERVER
 passwd=$REGAL_PASSWORD
-project=$PROJECT
-regalApi=api.$server
+project=$INDEXNAME
+regalApi=$BACKEND
 
 if [ ! -d $REGAL_LOGS ]; then
     mkdir $REGAL_LOGS

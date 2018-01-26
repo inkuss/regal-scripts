@@ -4,10 +4,9 @@ scriptdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $scriptdir
 source variables.conf
 
-INDEXNAME=frl
 TYPE=article,monograph,webpage,journal,part,file
 
-curl -s -XGET localhost:9200/$INDEXNAME/$TYPE/_search -d'{"query":{"match_all":{}},"fields":["/@id"],"size":"5000"}'|egrep -o "$INDEXNAME:[^\"]*">$REGAL_LOGS/${TYPE}Objects.txt
+curl -s -XGET $ELASTICSEARCH//$INDEXNAME/$TYPE/_search -d'{"query":{"match_all":{}},"fields":["/@id"],"size":"5000"}'|egrep -o "$INDEXNAME:[^\"]*">$REGAL_LOGS/${TYPE}Objects.txt
 
 log="$REGAL_LOGS/updateOaiSets-`date +"%Y%m%d"`.log"
 echo "Update OAI Sets"
