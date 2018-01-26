@@ -14,7 +14,7 @@ STATS_LOG=$REGAL_LOGS/stats.log
 function loadLogFile() {
     PATTERN=$1
     zgrep $PATTERN /var/log/apache2/other_vhosts_access.log.* > $TMP/matomoImport.log
-    python /opt/regal/piwik/misc/log-analytics/import_logs.py --recorder-max-payload-size=200 --url $PIWIK_URL --login $MATOMO_ADMIN --password $MATOMO_PASSWORD $TMP/matomoImport.log --idsite=$IDSITE >> $STATS_LOG
+    python $MATOMO/misc/log-analytics/import_logs.py --recorder-max-payload-size=200 --url $MATOMO_URL --login $MATOMO_ADMIN --password $MATOMO_PASSWORD $TMP/matomoImport.log --idsite=$IDSITE >> $STATS_LOG
 }
 
 loadLogFile "$YESTERDAY/[0-9][0-9][0-9][0-9]"
