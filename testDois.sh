@@ -33,8 +33,8 @@ function analyseAllDoisInRepo(){
     touch $REGAL_LOGS/noDoi-$dst.csv
     grep -v http $REGAL_LOGS/dois-$dst.csv > $REGAL_LOGS/noDoi-$dst.csv
 #   echo -e "\tFind objects without doi variant 2- Details at $REGAL_LOGS/doi-noDoi-$dst.csv"
-    numOfNoDoi=`curl -s -XGET $ELASTICSEARCH/$INDEXNAME/monograph/_search -d'{"query":{"match_all":{}},"fields":["/@id"], "filter":{"missing":{"field":"doi"}},"size":"50000"}'|json_pp|grep -o "$INDEXNAME:......."|sed s/"\(.*\)"/"https:\/\/$SERVER\/resource\/\1"/|wc -l`
-    listOfNoDoi=`curl -s -XGET $ELASTICSEARCH/$INDEXNAME/monograph/_search -d'{"query":{"match_all":{}},"fields":["/@id"], "filter":{"missing":{"field":"doi"}},"size":"50000"}'|json_pp|grep -o "$INDEXNAME:......."|sed s/"\(.*\)"/"https:\/\/$SERVER\/resource\/\1"/`
+    numOfNoDoi=`curl -s -XGET $ELASTICSEARCH/$INDEXNAME/monograph/_search -d'{"query":{"match_all":{}},"fields":["/@id"], "filter":{"missing":{"field":"doi"}},"size":"50000"}'|json_pp|grep -o "$INDEXNAME:......."|sed s/"\(.*\)"/"$PROTOCOL:\/\/$SERVER\/resource\/\1"/|wc -l`
+    listOfNoDoi=`curl -s -XGET $ELASTICSEARCH/$INDEXNAME/monograph/_search -d'{"query":{"match_all":{}},"fields":["/@id"], "filter":{"missing":{"field":"doi"}},"size":"50000"}'|json_pp|grep -o "$INDEXNAME:......."|sed s/"\(.*\)"/"$PROTOCOL:\/\/$SERVER\/resource\/\1"/`
     echo $listOfNoDoi >> $REGAL_LOGS/doi-noDoi-$dst.txt
     thirpartyDoi=`cat $REGAL_LOGS/foreignDoi-$dst.csv|wc -l` 
     digitoolDoi=`cat $REGAL_LOGS/digitoolDoi-$dst.csv|wc -l`
