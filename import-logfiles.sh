@@ -6,7 +6,7 @@ source variables.conf
 
 YESTERDAY=$(date +"%d/%b/%Y" -d"yesterday")    
 TMP=$REGAL_TMP
-IDSITE=4
+IDSITE=$IDSITE
 STATS_LOG=$REGAL_LOGS/stats.log
 
 function loadLogFile() {
@@ -16,6 +16,9 @@ function loadLogFile() {
 }
 
 loadLogFile "$YESTERDAY"
+CMD="sudo $MATOMO/console core:archive --skip-idsites=$SKIP_IDSITES --force-idsites=$IDSITE --force-all-periods=315576000 --force-date-last-n=1000 --url $MATOMO_URL"
+echo "executing command: $CMD >> $STATS_LOG 2>&1"
+$CMD >> $STATS_LOG 2>&1
 
 cd -
 # Beispiel um die Logfiles der letzten 24 Tage zu laden
