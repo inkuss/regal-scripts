@@ -15,10 +15,10 @@ function loadLogFile() {
     python $MATOMO/misc/log-analytics/import_logs.py --recorder-max-payload-size=200 --url $MATOMO_URL --login $MATOMO_ADMIN --password $MATOMO_PASSWORD $REGAL_TMP/matomoImport.log --idsite=$IDSITE >> $STATS_LOG
 }
 
-#loadLogFile "$YESTERDAY"
+loadLogFile "$YESTERDAY"
 # Beispiel um die Logfiles der letzten 10-40 Tage zu laden
 #
-for i in {10..40};do loadLogFile "$(LANG=en;date +"%d/%b/%Y" -d"$i days ago")";done
+#for i in {10..40};do loadLogFile "$(LANG=en;date +"%d/%b/%Y" -d"$i days ago")";done
 
 # Beispiel um die Differenz in Tagen auszurechnen
 #
