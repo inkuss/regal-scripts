@@ -101,7 +101,7 @@ bissekunden=$sekundenseit1970-259200; # - 3Tage - vorher: 604800 für 1 Woche
 vondatum_hr=`date -d @$vonsekunden +"%Y-%m-%d"`
 bisdatum_hr=`date -d @$bissekunden +"%Y-%m-%d"`
 echo "Objekte mit Anlagedatum von $vondatum_hr bis $bisdatum_hr:" >> $mailbodydatei
-resultset=`curl -s -XGET $ELASTICSEARCH/$project/journal,monograph,file,webpage/_search -d'{"query":{"range" : {"isDescribedBy.created":{"from":"'$vondatum_hr'","to":"'$bisdatum_hr'"}} },"fields":["isDescribedBy.created"],"size":"50000"}'`
+resultset=`curl -s -XGET $ELASTICSEARCH/${project}2/journal,monograph,file,webpage/_search -d'{"query":{"range" : {"isDescribedBy.created":{"from":"'$vondatum_hr'","to":"'$bisdatum_hr'"}} },"fields":["isDescribedBy.created"],"size":"50000"}'`
 #echo "resultset="
 #echo $resultset | jq "."
 for hit in `echo $resultset | jq -c ".hits.hits[]"`
