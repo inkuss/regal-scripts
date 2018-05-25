@@ -21,7 +21,7 @@ function postProcess(){
 #-----------config end-----------------
 
 # Generate list of files to work on
-filesToAnnonymize=`find $logDir -type f -name $extension -mtime +$days`
+filesToAnnonymize=`find $logDir -type f -name $extension ! -name "*.ano.*" -mtime +$days`
 
 # Test if
 if touch $logDir/.annonymize-apache-logs.sh.test > /dev/null 2>&1
