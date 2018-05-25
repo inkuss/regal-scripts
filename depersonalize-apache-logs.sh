@@ -14,8 +14,8 @@ extension="*.gz"
 anoBytes=".0.0"
 # define how to behave after anonymizing 
 function postProcess(){
-  echo Please remove $1 
-  #rm -f $1
+  #echo Please remove $1 
+  rm -f $1
 }
 
 #-----------config end-----------------
