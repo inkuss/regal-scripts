@@ -20,7 +20,6 @@ function postProcess(){
 
 #-----------config end-----------------
 
-
 # Generate list of files to work on
 filesToAnnonymize=`find $logDir -type f -name $extension -mtime +$days`
 
@@ -36,24 +35,7 @@ fi
 #Work through each file
 for file in `echo $filesToAnnonymize`
 do
-	# echo Analyse $file
-	# Hashmap to collect ips
- 	declare -A anoIps
-	# List all ips from $file
-	ips=`zgrep -Eo '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' $file`
-	for ip in `echo $ips`
-	do
-		#anonymize
-		anoIp=`echo $ip|grep -Eo '^[0-9]{1,3}\.[0-9]{1,3}'`
-		anoIp=${anoIp}${anoBytes}
-                #collect
-		anoIps[$ip]=$anoIp;
-	done
-
-	for key in "${!anoIps[@]}"
-	do
-	    # echo "Going to replace all $key with ${anoIps[$key]} in $file" 
-	    zcat $file| replace $key ${anoIps[$key]} |gzip > ${file%.*}.ano.gz  
-	done
-    	postProcess $file
+        # echo Process $file
+    	zcat $file |sed -E "s/([0-9]{1,3}\.[0-9]{1,3})\.[0-9]{1,3}\.[0-9]{1,3}/\1$anoBytes/"|gzip > ${file%.*}.ano.gz 
+	postProcess $file
 done
