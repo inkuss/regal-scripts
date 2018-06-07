@@ -32,11 +32,11 @@ else
 	exit 1;
 fi
 
-datestamp=`date +"%Y%m%d%H%M%s%S"`
 
 #Work through each file
 for file in `echo $filesToAnnonymize`
 do
+	datestamp=`date +"%Y%m%d%H%M%s"`
         # echo Process $file
     	zcat $file |sed -E "s/([0-9]{1,3}\.[0-9]{1,3})\.[0-9]{1,3}\.[0-9]{1,3}/\1$anoBytes/"|gzip > ${file%.*}.ano.${datestamp}.gz 
 	postProcess $file
