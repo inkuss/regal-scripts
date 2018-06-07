@@ -14,15 +14,15 @@ extension="*.gz"
 anoBytes=".0.0"
 # define how to behave after anonymizing 
 function postProcess(){
-  echo Please remove $1 
-  #rm -f $1
+  echo remove $1 
+  rm -f $1
 }
 
 #-----------config end-----------------
 
 # Generate list of files to work on
-filesToAnnonymize=`find $logDir -type f -name $extension ! -name "*.ano.*" -mtime +$days`
-
+filesToAnnonymize=`find $logDir -type f -name "$extension" ! -name "*.ano.*" -mtime +$days`
+echo "Try to annonymize $filesToAnnonymize"
 # Test if
 if touch $logDir/.annonymize-apache-logs.sh.test > /dev/null 2>&1
 then
@@ -32,10 +32,12 @@ else
 	exit 1;
 fi
 
+datestamp=`date +"%Y%m%d%H%M%s%S"`
+
 #Work through each file
 for file in `echo $filesToAnnonymize`
 do
         # echo Process $file
-    	zcat $file |sed -E "s/([0-9]{1,3}\.[0-9]{1,3})\.[0-9]{1,3}\.[0-9]{1,3}/\1$anoBytes/"|gzip > ${file%.*}.ano.gz 
+    	zcat $file |sed -E "s/([0-9]{1,3}\.[0-9]{1,3})\.[0-9]{1,3}\.[0-9]{1,3}/\1$anoBytes/"|gzip > ${file%.*}.ano.${datestamp}.gz 
 	postProcess $file
 done
