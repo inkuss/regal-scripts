@@ -14,7 +14,7 @@ extension="*.gz"
 anoBytes=".0.0"
 # define how to behave after anonymizing 
 function postProcess(){
-  echo remove $1 
+#  echo remove $1 
   rm -f $1
 }
 
@@ -22,7 +22,7 @@ function postProcess(){
 
 # Generate list of files to work on
 filesToAnnonymize=`find $logDir -type f -name "$extension" ! -name "*.ano.*" -mtime +$days`
-echo "Try to annonymize $filesToAnnonymize"
+#echo "Try to annonymize $filesToAnnonymize"
 # Test if
 if touch $logDir/.annonymize-apache-logs.sh.test > /dev/null 2>&1
 then
