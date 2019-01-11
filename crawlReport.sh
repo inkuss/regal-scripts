@@ -331,9 +331,7 @@ echo "Aktuelle Speicherplatzbelegung (Summen) durch Website-Crawls: $baseUrl/`ba
 echo "Aktuelle Status und Kennzahlen der einzelnen Crawl-Aufträge : $baseUrl/`basename $crawlReport`" >> $mailbodydatei
 
 subject="edoweb Website Crawl Reports"
-# recipients="kuss\@hbz-nrw.de"
-# recipients="edoweb\@listen.hbz-nrw.de"
-recipients="epflicht\@lbz-rlp.de reimer\@hbz-nrw.de schnasse\@hbz-nrw.de kuss\@hbz-nrw.de"
+recipients=$EMAIL_RECIPIENT_PROJECT_ADMIN
 mailx -s "$subject" $recipients < $mailbodydatei
 # rm $mailbodydatei
 
