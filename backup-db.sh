@@ -25,13 +25,13 @@ function clean(){
     num=`expr $len - $LIMIT`
     if [ $num -gt 0 ]
     then
-	SNAPSHOTS=`ls -tr $REGAL_BACKUP/mysql/|head -$num` 
-	# Loop over the results and delete each snapshot
-	for SNAPSHOT in $SNAPSHOTS
-	do
-	    echo "Deleting snapshot: $SNAPSHOT"
-	    rm -rf $REGAL_BACKUP/mysql/$SNAPSHOT
-	done
+        SNAPSHOTS=`ls -tr $REGAL_BACKUP/mysql/|head -$num` 
+        # Loop over the results and delete each snapshot
+        for SNAPSHOT in $SNAPSHOTS
+        do
+            echo "Deleting snapshot: $SNAPSHOT"
+            rm -rf $REGAL_BACKUP/mysql/$SNAPSHOT
+        done
     fi
     echo "Done!"
 }
@@ -41,6 +41,12 @@ function restore(){
     mysql -u root $REGAL_PASSWORD -p < $SNAPSHOT.sql
 }
 
+# Use -gt 1 to consume two arguments per pass in the loop (e.g. each
+# argument has a corresponding value to go with it).
+# Use -gt 0 to consume one or more arguments per pass in the loop (e.g.
+# some arguments don't have a corresponding value to go with it such
+# as in the --default example).
+# note: if this is set to -gt 0 the /etc/hosts part is not recognized ( may be a bug )
 while [[ $# -gt 0 ]]
 do
 key="$1"
