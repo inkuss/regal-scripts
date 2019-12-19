@@ -34,6 +34,7 @@ echo "home-Verzeichnis: $home_dir"
 echo "Projekt: $project"
 echo "Server: $server"
 
+
 runGatherer=`curl -s -XPOST -u$REGAL_ADMIN:$passwd "$regalApi/utils/runGatherer"`
 echo "Ergebnis: $runGatherer\n"; # Ausgabe in Log-Datei
 
