@@ -1,0 +1,44 @@
+#!/bin/bash
+# +---------------------------------------------------------------------------+
+# ! Website-CDN-Parser                                                        !
+# ! **************************************************************************+
+# ! Dieses Skript nimmt eine Startseite für eine Website ,
+# ! im Format z.B. https://www.mysite.de/Startseite,
+# ! und den Rumpfnamen für eine Webarchiv-Datei,
+# ! im Format z.B. WEB-www.mysite.de-20191219 .
+# ! Das Skript durchsucht die Starseite nach inkludierten Style- 
+# ! Skriptdateien. Das macht das Python-Skript "cdnparse", welches 
+# ! als Voraussetzung für dieses Skript installiert sein muss !
+# ! Das Skript sammelt gefundene URLs in der Datei cdn.txt .
+# ! Diese Datei wird im aktuellen Verzeichnis ($PWD) angelegt.
+# ! Anschließend werden mit wpull alle gefundenen Skripte und Styles
+# ! aus dem Internet heruntergeladen und in einem Webarchiv archiviert.
+# +---------------------------------------------------------------------------+
+# ! Autor           | Datum      | Grund                                      !
+# +---------------------------------------------------------------------------+
+# ! Ingolf Kuss     | 19.12.2019 | Neuanlage                                  !
+# +---------------------------------------------------------------------------+
+
+SITE=$1
+WARCNAME=$2
+echo "Starting CDN-Gathering"
+echo "SITE=$SITE"
+echo "WARCNAME=$WARCNAME"
+
+CDNPARSE=/opt/regal/python3/bin/cdnparse
+WPULL=/opt/regal/python3/bin/wpull
+$CDNPARSE -a  $SITE > cdn.txt
+
+cmd="$WPULL --warc-file $WARCNAME \
+    --no-check-certificate \
+    --no-robots \
+    --delete-after \
+    --tries=5 \
+    --waitretry=20 \
+    --random-wait \
+    --strip-session-id \
+    --warc-append \
+    --database $WARCNAME-cdn.db \
+    --input-file=cdn.txt"
+echo "executing command $cmd"
+$cmd
