@@ -144,7 +144,7 @@ do
       cat="X" # Status nicht anwendbar, da Objekt nicht im Katalog verzeichnet wird.
     else
       curlout_kat=$REGAL_TMP/curlout.$$.kat.xml
-      curl -s -o $curlout_kat "http://$urn_api/?verb=GetRecord&metadataPrefix=mabxml-1&identifier=$oai_id$id"
+      curl -s -o $curlout_kat "$urn_api/?verb=GetRecord&metadataPrefix=mabxml-1&identifier=$oai_id$id"
       istda_kat=$(grep -c "<identifier>$oai_id$id</identifier>" $curlout_kat);
       if [ $istda_kat -gt 0 ]
       then
@@ -163,7 +163,7 @@ do
     if [ "$modus" != "katalog" ]; then
       dnb="?"
       curlout_dnb=$REGAL_TMP/curlout.$$.dnb.xml
-      curl -s -o $curlout_dnb "http://$urn_api/?verb=GetRecord&metadataPrefix=epicur&identifier=$oai_id$id"
+      curl -s -o $curlout_dnb "$urn_api/?verb=GetRecord&metadataPrefix=epicur&identifier=$oai_id$id"
       istda_dnb=$(grep -c "<identifier>$oai_id$id</identifier>" $curlout_dnb);
       if [ $istda_dnb -gt 0 ]
       then
