@@ -298,10 +298,19 @@ for pid in `ls -d edoweb:*`; do
       echo "disc usage for warcs=$disc_usage_warcs"
       # belegter Plattenplatz eingesammeler Datenbankinhalte
       disc_usage_database=0
-      if [ -f *.db ]; then
-        disc_usage_database=`du -ks *.db | sed 's/^\(.*\)\s.*$/\1/'`
-        disc_usage_database=`echo "scale=0; $disc_usage_database / 1024" | bc`
-      fi
+      for dbfile in *.db; do
+        ## Check if the glob gets expanded to existing files.
+        ## If not, f here will be exactly the pattern above
+        ## and the exists test will evaluate to false.
+        if [ -e "$dbfile" ]; then
+          # echo "files do exist"
+          disc_usage_database=`cat *.db > /tmp/$$.db; du -ks /tmp/$$.db | sed 's/^\(.*\)\s.*$/\1/'`
+          rm /tmp/$$.db
+          disc_usage_database=`echo "scale=0; $disc_usage_database / 1024" | bc`
+        fi
+        ## This is all we needed to know, so we can break after the first iteration
+        break
+      done
       echo "disc usage for database contents=$disc_usage_database"
       # von Log-Dateien belegter Plattenplatz
       disc_usage_logs=0
