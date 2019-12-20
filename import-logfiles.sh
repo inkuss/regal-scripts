@@ -25,7 +25,7 @@ function loadLogFile() {
     
     for i in `ls`
     do
-	python $MATOMO/misc/log-analytics/import_logs.py --recorder-max-payload-size=200 --url $MATOMO_URL --login $MATOMO_ADMIN --password $MATOMO_PASSWORD $i --idsite=$IDSITE #>> $STATS_LOG
+	/usr/bin/python2 $MATOMO/misc/log-analytics/import_logs.py --recorder-max-payload-size=200 --url $MATOMO_URL --login $MATOMO_ADMIN --password $MATOMO_PASSWORD $i --idsite=$IDSITE #>> $STATS_LOG
     done
     cd -
     rm -rf $REGAL_TMP/$DIR
