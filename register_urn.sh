@@ -12,20 +12,20 @@
 #              an der OAI-Schnittstelle abgeholt hat.
 # Diese Skript guckt bei Objekten, die älter als 4 Tage sind.
 # zeitliche Einplaung als cronjobs:
-#5 7 * * * /opt/regal/cronjobs/register_urn.sh control  >> /opt/regal/logs/control_urn_vergabe.log
-#1 1 * * * /opt/regal/cronjobs/register_urn.sh katalog >> /opt/regal/logs/katalog_update.log
-#1 0 * * * /opt/regal/cronjobs/register_urn.sh register >> /opt/regal/logs/register_urn.log
+#5 7 * * * /opt/regal/regal-scripts/register_urn.sh control  >> /opt/regal/cronjobs/log/control_urn_vergabe.log
+#1 1 * * * /opt/regal/regal-scripts/register_urn.sh katalog >> /opt/regal/cronjobs/log/katalog_update.log
+#1 0 * * * /opt/regal/regal-scripts/register_urn.sh register >> /opt/regal/cronjobs/log/register_urn.log
 #              
 # Änderungshistorie:
 # Autor               | Datum      | Beschreibung
-# --------------------+------------+-----------------------------------------
+# --------------------+------------+--------------------------------------------------------------
 # Ingolf Kuss         | 07.12.2015 | Neuanlage als ks.control_urn_vergabe.sh
 # Ingolf Kuss         | 14.01.2016 | grep => jq
 # Ingolf Kuss         | 22.01.2016 | Neuanlage als ks.register_urn.sh
 # Ingolf Kuss         | 19.07.2016 | Neuer Modus "katalog"
-# Ingolf Kuss         | 12.01.2018 | Auslagerung von Systemvariablen, 
-#                     |            |  Umbenennung nach register_urn.sh
-# --------------------+------------+-----------------------------------------
+# Ingolf Kuss         | 12.01.2018 | Auslagerung von Systemvariablen, Umbenennung nach register_urn.sh
+# Ingolf Kuss         | 19.12.2019 | Verschiebung vom Verzeichnis cronjobs/ nach regal-scripts/
+# --------------------+------------+--------------------------------------------------------------
 
 # Der Pfad, in dem dieses Skript steht
 scriptdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -101,7 +101,7 @@ bissekunden=$sekundenseit1970-259200; # - 3Tage - vorher: 604800 für 1 Woche
 vondatum_hr=`date -d @$vonsekunden +"%Y-%m-%d"`
 bisdatum_hr=`date -d @$bissekunden +"%Y-%m-%d"`
 echo "Objekte mit Anlagedatum von $vondatum_hr bis $bisdatum_hr:" >> $mailbodydatei
-resultset=`curl -s -XGET $ELASTICSEARCH/${project}2/journal,monograph,file,webpage/_search -d'{"query":{"range" : {"isDescribedBy.created":{"from":"'$vondatum_hr'","to":"'$bisdatum_hr'"}} },"fields":["isDescribedBy.created"],"size":"50000"}'`
+resultset=`curl -s -XGET $ELASTICSEARCH/$project/journal,monograph,file,webpage/_search -d'{"query":{"range" : {"isDescribedBy.created":{"from":"'$vondatum_hr'","to":"'$bisdatum_hr'"}} },"fields":["isDescribedBy.created"],"size":"50000"}'`
 #echo "resultset="
 #echo $resultset | jq "."
 for hit in `echo $resultset | jq -c ".hits.hits[]"`
@@ -134,15 +134,9 @@ do
         continue;
     fi
 
-    # >>> Test für eine einzelne ID
-    # id="edoweb:7002478"
-    # contentType="file"
-    # <<< Test
-
     # Bearbeitung dieser id,cdate
     echo "$aktdate: bearbeite id=$id, Anlagedatum $cdate"; # Ausgabe in log-Datei
-    protocol=$PROTOCOL
-    url=$protocol://$server/resource/$id
+    url=http://$server/resource/$id
     # Ist das Objekt an der OAI-Schnittstelle "da" ?
     # 1. ist das Objekt an den Katalog gemeldet worden ?
     cat="?";
@@ -150,7 +144,7 @@ do
       cat="X" # Status nicht anwendbar, da Objekt nicht im Katalog verzeichnet wird.
     else
       curlout_kat=$REGAL_TMP/curlout.$$.kat.xml
-      curl -s -o $curlout_kat "http://$urn_api/?verb=GetRecord&metadataPrefix=mabxml-1&identifier=$oai_id$id"
+      curl -s -o $curlout_kat "$urn_api/?verb=GetRecord&metadataPrefix=mabxml-1&identifier=$oai_id$id"
       istda_kat=$(grep -c "<identifier>$oai_id$id</identifier>" $curlout_kat);
       if [ $istda_kat -gt 0 ]
       then
@@ -169,7 +163,7 @@ do
     if [ "$modus" != "katalog" ]; then
       dnb="?"
       curlout_dnb=$REGAL_TMP/curlout.$$.dnb.xml
-      curl -s -o $curlout_dnb "http://$urn_api/?verb=GetRecord&metadataPrefix=epicur&identifier=$oai_id$id"
+      curl -s -o $curlout_dnb "$urn_api/?verb=GetRecord&metadataPrefix=epicur&identifier=$oai_id$id"
       istda_dnb=$(grep -c "<identifier>$oai_id$id</identifier>" $curlout_dnb);
       if [ $istda_dnb -gt 0 ]
       then
@@ -184,19 +178,9 @@ do
       rm $curlout_dnb
     fi
     
-    # >>> Test für eine einzelne ID
-    # if [ "$modus" = "register" ]; then
-    #   addURN=`curl -XPOST -u$ADMIN_USER:$passwd "https://$regalApi/utils/addUrn?id=${id:7}&namespace=$NAMESPACE&snid=hbz:929:02"`
-    #   echo "$addURN\n"; # Ausgabe in log-Datei
-    #   addURNresponse=${addURN:0:80}
-    #   echo -e "$url\t$cdate\t$cat\t$dnb\t$contentType\t\t$addURNresponse" >> $outdatei
-    #   break;
-    # fi
-    # <<< Test
-
     if [ "$modus" = "register" ] && [ "$dnb" != "J" ]; then
       # Nachregistrierung des Objektes für URN-Vergabe
-      addURN=`curl -XPOST -u$ADMIN_USER:$passwd "https://$regalApi/utils/addUrn?id=${id:7}&namespace=$NAMESPACE&snid=hbz:929:02"`
+      addURN=`curl -s -XPOST -u$REGAL_ADMIN:$passwd "https://$regalApi/utils/addUrn?id=${id:7}&namespace=$INDEXNAME&snid=hbz:929:02"`
       echo "$aktdate: $addURN\n"; # Ausgabe in log-Datei
       addURNresponse=${addURN:0:80}
       echo -e "$url\t$cdate\t$cat\t$dnb\t$contentType\t\t$addURNresponse" >> $outdatei
@@ -210,7 +194,7 @@ do
       # Ausgabe und Weiterbehandlung nur im Fehlerfalle
       # minimalen Update auf das Objekt machen, z.B. über erneutes Setzen der Zugriffrechte
       # dadurch wird das Objekt dann an der Katalogschnittstelle gemeldet
-      update=`curl -H "Content-Type: application/json" -XPATCH -u$ADMIN_USER:$passwd -d'{"publishScheme":"public"}' "https://$regalApi/resource/$id"`
+      update=`curl -s -H "Content-Type: application/json" -XPATCH -u$REGAL_ADMIN:$passwd -d'{"publishScheme":"public"}' "https://$regalApi/resource/$id"`
       echo "$aktdate: $update\n"; # Ausgabe in log-Datei
       updateResponse=${update:0:80}
       echo -e "$url\t$cdate\t$cat\t$contentType\t\t$updateResponse" >> $outdatei
@@ -228,7 +212,7 @@ elif [ "$modus" = "katalog" ]; then
   echo -e "URL\t\t\t\t\t\tAnlagedatum\t\tKatalog\tcontentType\t\"update\"-Response (abbrev. to max 80 chars)" >> $mailbodydatei
 fi
 if [ -s $outdatei ]; then
-  # outdatei has some data
+  # outdatei ist nicht leer
   outdateisort=$REGAL_TMP/ctrl_urn.$$.out.sort.txt
   sort $outdatei > $outdateisort
   rm $outdatei
@@ -253,4 +237,4 @@ if [ -s $outdatei ]; then
   # rm $mailbodydatei
 fi
 
-cd-
+cd -

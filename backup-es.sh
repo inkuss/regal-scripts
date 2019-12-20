@@ -27,8 +27,8 @@ function clean(){
     # Loop over the results and delete each snapshot
     for SNAPSHOT in $SNAPSHOTS
     do
-	echo "Deleting snapshot: $SNAPSHOT"
-	curl -s -XDELETE "$ELASTICSEARCH/_snapshot/$REPO/$SNAPSHOT?pretty"
+        echo "Deleting snapshot: $SNAPSHOT"
+        curl -s -XDELETE "$ELASTICSEARCH/_snapshot/$REPO/$SNAPSHOT?pretty"
     done
     echo "Done!"
 }
@@ -51,15 +51,21 @@ function restore(){
     curl -XPOST "$ELASTICSEARCH/my_index/_close"
 
     # Restore the snapshot we want
-    curl -XPOST "http://$ELASTICSEARCH/_snapshot/my_backup/$SNAPSHOT/_restore" -d '{
- "indices": "my_index"
-}'
+    curl -XPOST "$ELASTICSEARCH/_snapshot/my_backup/$SNAPSHOT/_restore" -d '{
+     "indices": "my_index"
+    }'
 
     # Re-open the index
     curl -XPOST '$ELASTICSEARCH/my_index/_open'
     echo "Done!"
 }
 
+# Use -gt 1 to consume two arguments per pass in the loop (e.g. each
+# argument has a corresponding value to go with it).
+# Use -gt 0 to consume one or more arguments per pass in the loop (e.g.
+# some arguments don't have a corresponding value to go with it such
+# as in the --default example).
+# note: if this is set to -gt 0 the /etc/hosts part is not recognized ( may be a bug )
 while [[ $# -gt 0 ]]
 do
 key="$1"

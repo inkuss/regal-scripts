@@ -13,11 +13,11 @@ log="$REGAL_LOGS/lobidify-`date +"%Y%m%d"`.log"
 echo "lobidify & enrich"
 echo "Find logfile in $log"
 
-cat $REGAL_LOGS/titleObjects.txt | parallel --jobs 5 ./updatePid.sh {} $BACKEND > $log 2>&1
+cat $REGAL_LOGS/titleObjects.txt | parallel --jobs 2 ./updatePid.sh {} $BACKEND > $log 2>&1
 cp $log /tmp/updateMetadata
 echo >> $log
 echo "Summary" >> $log
-numOfUpdatePids=`grep  "Enrichment.*succeeded!" /tmp/updateMetadata | grep -v "Not updated"|grep -o "frl:[^\ ]*"|sort|uniq|wc -l`
+numOfUpdatePids=`grep  "Enrichment.*succeeded!" /tmp/updateMetadata | grep -v "Not updated"|grep -o "edoweb:[^\ ]*"|sort|uniq|wc -l`
 echo "Updated Pids $numOfUpdatePids" >> $log
-grep  "Enrichment.*succeeded!" /tmp/updateMetadata | grep -v "Not updated"|grep -o "frl:[^\ ]*"|sort|uniq >> $log
+grep  "Enrichment.*succeeded!" /tmp/updateMetadata | grep -v "Not updated"|grep -o "edoweb:[^\ ]*"|sort|uniq >> $log
 cd -
