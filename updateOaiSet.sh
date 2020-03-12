@@ -10,5 +10,5 @@ server=$2
 echo ""
 echo "Update Oai Set $pid"
 echo ""
-curl -s -u$REGAL_ADMIN:$REGAL_PASSWORD -XPOST $server/resource/$pid/oaisets -H"accept: application/json" 
+curl -s -u$REGAL_ADMIN:$REGAL_PASSWORD -XPOST ${URN_BASE}$pid/oaisets -H"accept: application/json" 
 echo""
