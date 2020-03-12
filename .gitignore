@@ -22,5 +22,4 @@ conf/application.conf
 scripts/variables.conf
 *~
 variables.conf
-ks.*
 regal-scripts.HIST
