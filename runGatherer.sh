@@ -1,9 +1,9 @@
 #!/bin/bash
 # dieses Skript stößt einen Lauf der Webgatherer-Sequenz "runGatherer" an.
 # Dabei werden alle Websites daraufhin überprüft, ob sie jetzt neu einzusammeln (gathern) sind.
-# Falls ja, wird ein Gather-Lauf angestoßen (Übergabe an Heritrix).
+# Falls ja, wird ein Gather-Lauf angestoßen (Übergabe an Heritrix oder Wpull).
 # zeitliche Einplaung als cronjob:
-#0 20 * * * /opt/regal/cronjobs/runGatherer.sh >> /opt/regal/logs/runGatherer.log
+#0 20 * * * /opt/regal/regal-scripts/runGatherer.sh >> /opt/regal/logs/runGatherer.log
 #              
 # Änderungshistorie:
 # Autor               | Datum      | Beschreibung
@@ -21,7 +21,7 @@ source variables.conf
 home_dir=$CRONJOBS_DIR
 server=$SERVER
 passwd=$REGAL_PASSWORD
-project=$NAMESPACE
+project=$INDEXNAME
 regalApi=$BACKEND
 
 if [ ! -d $REGAL_LOGS ]; then
@@ -34,8 +34,8 @@ echo "home-Verzeichnis: $home_dir"
 echo "Projekt: $project"
 echo "Server: $server"
 
-runGatherer=`curl -XPOST -u$REGAL_ADMIN:$passwd "$PROTOCOL://$regalApi/utils/runGatherer"`
-echo "$runGatherer\n"; # Ausgabe in Log-Datei
+runGatherer=`curl -s -XPOST -u$REGAL_ADMIN:$passwd "$regalApi/utils/runGatherer"`
+echo "Ergebnis: $runGatherer\n"; # Ausgabe in Log-Datei
 
 echo "siehe Log-Datei $REGAL_APP/logs/webgatherer.log"
-echo "Ende runGatherer am/um"`date +"%d.%m.%Y %H:%M:%S"`
+echo "Ende runGatherer am/um "`date +"%d.%m.%Y %H:%M:%S"`
